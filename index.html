@@ -4,11 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Physics Interactive Worksheet</title>
-  
-  <!-- CDN скрипты -->
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js](https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js)"></script>
-  <link rel="stylesheet" href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   
   <style>
     :root {
@@ -69,9 +65,6 @@
     }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
-    
-    .btn-excel { background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-excel:hover { background: #059669; }
 
     .badge { display: inline-block; background: var(--badge-bg); color: var(--badge-text); padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
     
@@ -97,7 +90,6 @@
     td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--text-main); }
     .status-badge { background: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
 
-    #qrcode img { margin: 0 auto; border-radius: 8px; border: 1px solid var(--border); padding: 10px; background: white; }
     .link-box { background: #F9FAFB; border: 1px solid var(--border); padding: 10px; border-radius: 6px; font-size: 12px; word-break: break-all; margin-bottom: 15px; }
 
     .blank-input { display: inline-block; width: 100px; padding: 6px; margin: 0 4px; text-align: center; border: 1px solid var(--border); border-radius: 4px;}
@@ -108,7 +100,6 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header class="app-header" id="main-header">
     <div class="header-logo">
       <div style="background: var(--primary); padding: 8px; border-radius: 8px; font-size: 20px;">⚡</div>
@@ -124,8 +115,6 @@
   </header>
 
   <div class="container">
-    
-    <!-- CONSTRUCTOR VIEW -->
     <div id="view-constructor" class="constructor-grid">
       <div class="panel">
         <h2 class="panel-title">Параметры генерации</h2>
@@ -161,7 +150,7 @@
         <div id="qr-result" style="display:none; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
           <label style="font-size: 12px; font-weight:600; color: var(--text-muted); text-transform:uppercase;">Ссылка и QR для учеников</label>
           <div class="link-box" id="sheet-link"></div>
-          <div id="qrcode"></div>
+          <div id="qrcode-img" style="text-align:center;"></div>
         </div>
       </div>
 
@@ -171,7 +160,6 @@
           <span style="float: right; font-size: 14px; color: var(--primary); font-weight: 600;">Макс. балл: 10</span>
           <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 12px;">Тема урока</h2>
           
-          <!-- Блок "Адал азамат" -->
           <div class="adal-box">
             <strong>🌟 Ценности «Адал азамат»:</strong> <span id="preview-adal">...</span>
           </div>
@@ -184,7 +172,6 @@
       </div>
     </div>
 
-    <!-- ANSWERS DASHBOARD -->
     <div id="view-answers" class="panel" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
@@ -192,7 +179,6 @@
           <p style="font-size: 12px; color: var(--text-muted);">Автопроверка ИИ + возможность ручной проверки</p>
         </div>
         <div style="display: flex; gap: 10px;">
-          <button class="btn-excel" onclick="exportToExcel()">📊 Excel</button>
           <button class="form-control" style="width: auto; cursor: pointer;" onclick="loadResults()">↻ Обновить</button>
         </div>
       </div>
@@ -216,7 +202,6 @@
       </div>
     </div>
 
-    <!-- STUDENT VIEW -->
     <div id="view-student" style="display: none; max-width: 800px; margin: 0 auto;">
       <div class="panel" style="margin-bottom: 20px;">
         <span class="badge">Интерактивный рабочий лист</span>
@@ -243,17 +228,14 @@
       <button class="btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
     </div>
 
-    <!-- SUCCESS VIEW -->
     <div id="view-success" class="panel" style="display: none; text-align: center; max-width: 500px; margin: 40px auto;">
       <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
       <h2 style="margin-bottom: 10px;">Ответы успешно отправлены!</h2>
       <p style="color: var(--text-muted); margin-bottom: 20px;">Учитель получит результаты в онлайн-дэшборде.</p>
       <h3 id="final-score" style="color: var(--primary); font-size: 24px;"></h3>
     </div>
-
   </div>
 
-  <!-- MODAL FOR MANUAL CHECK -->
   <div class="modal-overlay" id="detail-modal">
     <div class="modal">
       <h3 style="margin-bottom: 15px;" id="modal-student-name">Детали ответа</h3>
@@ -261,7 +243,7 @@
       
       <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <label style="font-size: 14px; font-weight: 600;">Сколько поставить баллов:</label>
+          <label style="font-size: 14px; font-weight: 600;">Балл:</label>
           <input type="number" id="manual-score-input" class="form-control" style="width: 80px;" min="0" max="10">
         </div>
         <div>
@@ -273,7 +255,7 @@
   </div>
 
   <script>
-   const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev';
+    const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev';
 
     let currentTeacherSheetId = null;
     let currentTasks = [];
@@ -292,7 +274,6 @@
 
     function switchTab(tabName) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      
       if (tabName === 'constructor') {
         document.getElementById('tab-btn-constructor').classList.add('active');
         document.getElementById('view-constructor').style.display = 'grid';
@@ -330,12 +311,11 @@
         
         document.getElementById('qr-result').style.display = 'block';
         document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank" style="color: var(--primary); font-weight:600; text-decoration: none;">${studentUrl}</a>`;
-        document.getElementById('qrcode').innerHTML = "";
-        if (window.QRCode) new QRCode(document.getElementById("qrcode"), { text: studentUrl, width: 128, height: 128 });
+        
+        document.getElementById('qrcode-img').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(studentUrl)}" alt="QR Code" style="border-radius:8px; border:1px solid #ddd; padding:6px; background:white;">`;
 
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
-        
         document.getElementById('preview-topic').innerText = topic;
         document.getElementById('preview-adal').innerText = data.sheet.adal_azamat_value || "Честность и точность в измерениях — залог доверия и справедливых результатов!";
         
@@ -352,13 +332,11 @@
                 </div>
                 <p class="task-title">${task.text}</p>
             `;
-            
             if (task.type === 'multiple_choice' && task.options) {
               tHtml += `<ul style="margin-top:10px; padding-left:20px; color: var(--text-muted);">` + task.options.map(o => `<li>${o}</li>`).join('') + `</ul>`;
             } else if (task.type === 'blanks') {
               tHtml += `<p style="margin-top:10px; color: var(--text-muted); font-family: monospace;">Пропуски: ${task.solution_template}</p>`;
             }
-            
             tHtml += `
                 <div class="reference-box">
                   <strong>Эталон правильного ответа:</strong> ${task.correct ? task.correct.join(', ') : ''}
@@ -387,7 +365,6 @@
       try {
         const res = await fetch(`${WORKER_URL}/api/results/${currentTeacherSheetId}`);
         fetchedResults = await res.json();
-        
         document.getElementById('answers-count-badge').innerText = fetchedResults.length;
 
         if (!fetchedResults || fetchedResults.length === 0) {
@@ -452,41 +429,18 @@
       loadResults();
     }
 
-    function exportToExcel() {
-      if (!fetchedResults || fetchedResults.length === 0) {
-        alert("Нет данных для экспорта!");
-        return;
-      }
-
-      const excelData = fetchedResults.map(r => ({
-        "Ученик": r.student.name,
-        "Класс": r.student.class,
-        "Балл": r.score,
-        "Макс. балл": r.maxScore,
-        "Время сдачи": new Date(r.timestamp).toLocaleString('ru-RU')
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(excelData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Результаты");
-      XLSX.writeFile(workbook, `Результаты_физика_${currentTeacherSheetId}.xlsx`);
-    }
-
-    // STUDENT CODE
     async function loadStudentSheet(id) {
       try {
         const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
         const data = await res.json();
         
         document.getElementById('student-topic').innerText = data.topic;
-        
         if (data.adal_azamat_value) {
           document.getElementById('student-adal-box').style.display = 'block';
           document.getElementById('student-adal').innerText = data.adal_azamat_value;
         }
 
         currentTasks = data.tasks;
-
         const container = document.getElementById('student-tasks');
         container.innerHTML = '';
 
