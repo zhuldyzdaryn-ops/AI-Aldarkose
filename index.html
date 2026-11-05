@@ -62,7 +62,6 @@
     .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
     .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; }
     .form-control:focus { border-color: var(--primary); }
-    textarea.form-control { resize: vertical; min-height: 80px; }
 
     .btn-primary {
       width: 100%; background: var(--primary); color: white; border: none;
@@ -129,21 +128,29 @@
         </div>
 
         <div class="form-group">
-          <label>Тема урока</label>
+          <label>Название рабочего листа</label>
           <select id="topic-select" class="form-control">
             <option>Внутренняя энергия. Виды теплопередачи</option>
             <option>Количество теплоты. Удельная теплоёмкость</option>
             <option>Удельная теплота сгорания топлива</option>
             <option>Плавление и отвердевание</option>
+            <option>Электризация тел и электрическое поле</option>
             <option>Электрический ток и электрическая цепь</option>
+            <option>Сила тока, напряжение, сопротивление</option>
             <option>Закон Ома</option>
-            <option>Отражение и преломление света</option>
+            <option>Расчет сопротивления проводников</option>
+            <option>Последовательное и параллельное соединение</option>
+            <option>Работа и мощность тока</option>
+            <option>Тепловое действие тока</option>
+            <option>Электромагнитные явления</option>
+            <option>Источники света. Прямолинейное распространение и отражение света</option>
+            <option>Отражение и преломление света. Скорость света</option>
+            <option>Распространение света. Отражение от плоской поверхности</option>
+            <option>Прямолинейное распространение света. Зеркальное и рассеянное отражение</option>
+            <option>Плоские зеркала</option>
+            <option>Преломление света</option>
+            <option>Линзы</option>
           </select>
-        </div>
-
-        <div class="form-group">
-          <label>Цель обучения (ЦО)</label>
-          <textarea id="objective-input" class="form-control" placeholder="Например: 8.3.2.1 - применять формулу количества теплоты..."></textarea>
         </div>
 
         <button id="gen-btn" class="btn-primary" onclick="generateSheet()">Сгенерировать</button>
@@ -160,13 +167,12 @@
           <span class="badge" id="preview-class">8 КЛАСС</span>
           <span style="float: right; font-size: 14px; color: var(--primary); font-weight: 600;">Макс. балл: 10</span>
           <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 8px;">Тема урока</h2>
-          <p id="preview-objective" style="color: var(--text-muted); font-size: 14px;"><strong>ЦО:</strong> </p>
         </div>
         <div id="preview-tasks"></div>
       </div>
       
       <div class="panel" id="empty-state" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        <p>Выберите параметры и нажмите «Сгенерировать», чтобы увидеть предпросмотр 6 задач (10 баллов).</p>
+        <p>Выберите тему и нажмите «Сгенерировать», чтобы увидеть предпросмотр.</p>
       </div>
     </div>
 
@@ -292,12 +298,11 @@
       const btn = document.getElementById('gen-btn');
       const topic = document.getElementById('topic-select').value;
       const classLevel = document.getElementById('class-select').value;
-      const objective = document.getElementById('objective-input').value;
       
       btn.disabled = true;
       btn.innerText = "Генерация 6 задач (10-15 сек)...";
 
-      const fullTopic = `${classLevel}. Тема: ${topic}. ${objective ? 'Цель: ' + objective : ''}`;
+      const fullTopic = `${classLevel}. Тема: ${topic}`;
 
       try {
         const response = await fetch(`${WORKER_URL}/api/generate`, {
@@ -325,7 +330,6 @@
         
         document.getElementById('preview-class').innerText = classLevel.toUpperCase();
         document.getElementById('preview-topic').innerText = topic;
-        document.getElementById('preview-objective').innerText = "ЦО: " + (objective || "Не указана");
         
         const previewDiv = document.getElementById('preview-tasks');
         previewDiv.innerHTML = '';
