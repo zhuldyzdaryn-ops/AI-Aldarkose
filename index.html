@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Physics Interactive Worksheet</title>
   
-  <!-- Надежные CDN библиотеки (QR, Excel, Шрифты) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <!-- CDN скрипты -->
+  <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
+  <script src="[https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js](https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js)"></script>
+  <link rel="stylesheet" href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)">
   
   <style>
     :root {
@@ -23,12 +23,13 @@
       --success-text: #065F46;
       --badge-bg: #EEF2FF;
       --badge-text: #4F46E5;
+      --adal-bg: #FEF3C7;
+      --adal-text: #92400E;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     body { background-color: var(--bg-color); color: var(--text-main); }
 
-    /* Header */
     .app-header {
       background-color: #3730A3;
       color: white;
@@ -48,9 +49,8 @@
     }
     .nav-tab.active { background: var(--primary); border-color: var(--primary); }
 
-    /* Layout */
     .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-    .constructor-grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+    .constructor-grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; }
     
     .panel {
       background: var(--surface); border-radius: 12px; padding: 24px;
@@ -74,6 +74,18 @@
     .btn-excel:hover { background: #059669; }
 
     .badge { display: inline-block; background: var(--badge-bg); color: var(--badge-text); padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    
+    .adal-box {
+      background: var(--adal-bg);
+      color: var(--adal-text);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      border-left: 4px solid #F59E0B;
+    }
+
     .task-preview { border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .task-title { font-weight: 600; font-size: 15px; margin: 0; }
@@ -90,7 +102,6 @@
 
     .blank-input { display: inline-block; width: 100px; padding: 6px; margin: 0 4px; text-align: center; border: 1px solid var(--border); border-radius: 4px;}
 
-    /* Modal */
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal { background: white; border-radius: 12px; width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; }
   </style>
@@ -103,7 +114,7 @@
       <div style="background: var(--primary); padding: 8px; border-radius: 8px; font-size: 20px;">⚡</div>
       <div>
         <h1>AI Physics Interactive Worksheet</h1>
-        <p>Конструктор рабочего листа по физике</p>
+        <p>Конструктор рабочих листов (8 класс)</p>
       </div>
     </div>
     <div class="nav-tabs" id="nav-tabs">
@@ -114,21 +125,13 @@
 
   <div class="container">
     
-    <!-- CONSTRUCTOR -->
+    <!-- CONSTRUCTOR VIEW -->
     <div id="view-constructor" class="constructor-grid">
       <div class="panel">
-        <h2 class="panel-title">Параметры рабочего листа</h2>
+        <h2 class="panel-title">Параметры генерации</h2>
         
         <div class="form-group">
-          <label>Класс</label>
-          <select id="class-select" class="form-control">
-            <option>8 класс</option>
-            <option>9 класс</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Название рабочего листа</label>
+          <label>Выберите тему из сборника (8 класс)</label>
           <select id="topic-select" class="form-control">
             <option>Внутренняя энергия. Виды теплопередачи</option>
             <option>Количество теплоты. Удельная теплоёмкость</option>
@@ -153,7 +156,7 @@
           </select>
         </div>
 
-        <button id="gen-btn" class="btn-primary" onclick="generateSheet()">Сгенерировать</button>
+        <button id="gen-btn" class="btn-primary" onclick="generateSheet()">Сгенерировать рабочий лист</button>
 
         <div id="qr-result" style="display:none; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
           <label style="font-size: 12px; font-weight:600; color: var(--text-muted); text-transform:uppercase;">Ссылка и QR для учеников</label>
@@ -163,16 +166,21 @@
       </div>
 
       <div class="panel" id="preview-area" style="display: none;">
-        <div style="margin-bottom: 24px;">
-          <span class="badge" id="preview-class">8 КЛАСС</span>
+        <div style="margin-bottom: 20px;">
+          <span class="badge">8 КЛАСС</span>
           <span style="float: right; font-size: 14px; color: var(--primary); font-weight: 600;">Макс. балл: 10</span>
-          <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 8px;">Тема урока</h2>
+          <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 12px;">Тема урока</h2>
+          
+          <!-- Блок "Адал азамат" -->
+          <div class="adal-box">
+            <strong>🌟 Ценности «Адал азамат»:</strong> <span id="preview-adal">...</span>
+          </div>
         </div>
         <div id="preview-tasks"></div>
       </div>
       
       <div class="panel" id="empty-state" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        <p>Выберите тему и нажмите «Сгенерировать», чтобы увидеть предпросмотр.</p>
+        <p>Выберите тему из списка и нажмите «Сгенерировать рабочий лист».</p>
       </div>
     </div>
 
@@ -214,6 +222,10 @@
         <span class="badge">Интерактивный рабочий лист</span>
         <h2 id="student-topic" style="margin: 10px 0;">Загрузка...</h2>
         
+        <div class="adal-box" id="student-adal-box" style="display:none; margin-top: 15px;">
+          <strong>🌟 Ценности «Адал азамат»:</strong> <span id="student-adal">...</span>
+        </div>
+
         <div style="display: flex; gap: 15px; margin-top: 20px;">
           <div class="form-group" style="flex: 2;">
             <label>Фамилия и Имя</label>
@@ -221,7 +233,7 @@
           </div>
           <div class="form-group" style="flex: 1;">
             <label>Класс</label>
-            <input type="text" id="student-class" class="form-control" placeholder="8 «А»">
+            <input type="text" id="student-class" class="form-control" value="8 класс" placeholder="8 «А»">
           </div>
         </div>
       </div>
@@ -261,8 +273,7 @@
   </div>
 
   <script>
-    // Точный URL адрес вашего Worker
-    const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev'; 
+    const WORKER_URL = '[https://steep-grass-214f.z-kuralbayeva.workers.dev](https://steep-grass-214f.z-kuralbayeva.workers.dev)'; 
 
     let currentTeacherSheetId = null;
     let currentTasks = [];
@@ -297,18 +308,15 @@
     async function generateSheet() {
       const btn = document.getElementById('gen-btn');
       const topic = document.getElementById('topic-select').value;
-      const classLevel = document.getElementById('class-select').value;
       
       btn.disabled = true;
-      btn.innerText = "Генерация 6 задач (10-15 сек)...";
-
-      const fullTopic = `${classLevel}. Тема: ${topic}`;
+      btn.innerText = "Генерация 6 задач и ценностей (10-15 сек)...";
 
       try {
         const response = await fetch(`${WORKER_URL}/api/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic: fullTopic })
+          body: JSON.stringify({ topic })
         });
         const data = await response.json();
 
@@ -328,8 +336,8 @@
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
         
-        document.getElementById('preview-class').innerText = classLevel.toUpperCase();
         document.getElementById('preview-topic').innerText = topic;
+        document.getElementById('preview-adal').innerText = data.sheet.adal_azamat_value || "Честность и точность в измерениях — залог доверия и справедливых результатов!";
         
         const previewDiv = document.getElementById('preview-tasks');
         previewDiv.innerHTML = '';
@@ -364,7 +372,7 @@
         alert("Ошибка сети или сервера: " + err.message);
       } finally {
         btn.disabled = false;
-        btn.innerText = "Сгенерировать";
+        btn.innerText = "Сгенерировать рабочий лист";
       }
     }
 
@@ -470,10 +478,13 @@
         const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
         const data = await res.json();
         
-        let cleanTopic = data.topic.split('. Тема: ')[1] || data.topic;
-        cleanTopic = cleanTopic.split('. Цель:')[0];
+        document.getElementById('student-topic').innerText = data.topic;
         
-        document.getElementById('student-topic').innerText = cleanTopic;
+        if (data.adal_azamat_value) {
+          document.getElementById('student-adal-box').style.display = 'block';
+          document.getElementById('student-adal').innerText = data.adal_azamat_value;
+        }
+
         currentTasks = data.tasks;
 
         const container = document.getElementById('student-tasks');
