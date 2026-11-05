@@ -13,8 +13,13 @@
     button { background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
     button:hover { background: #219150; }
     button:disabled { background: #95a5a6; cursor: not-allowed; }
+    .btn-blue { background: #3498db; margin-top: 20px;}
+    .btn-blue:hover { background: #2980b9; }
     .task { background: #fafafa; border-left: 4px solid #3498db; padding: 15px; margin: 15px 0; border-radius: 4px; }
     .blank-input { display: inline-block; width: 90px; padding: 6px; margin: 0 4px; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+    th { background: #f4f7f6; }
     #qrcode { margin: 20px auto; display: flex; justify-content: center; }
   </style>
 </head>
@@ -29,31 +34,26 @@
     <select id="topic-select">
       <option>Внутренняя энергия. Виды теплопередачи</option>
       <option>Количество теплоты. Удельная теплоёмкость</option>
-      <option>Удельная теплота сгорания топлива</option>
       <option>Плавление и отвердевание</option>
       <option>Электризация тел и электрическое поле</option>
-      <option>Электрический ток и электрическая цепь</option>
-      <option>Сила тока, напряжение, сопротивление</option>
       <option>Закон Ома</option>
-      <option>Расчет сопротивления проводников</option>
       <option>Последовательное и параллельное соединение</option>
-      <option>Работа и мощность тока</option>
-      <option>Тепловое действие тока</option>
-      <option>Электромагнитные явления</option>
-      <option>Источники света. Прямолинейное распространение и отражение света</option>
       <option>Отражение и преломление света. Скорость света</option>
-      <option>Распространение света. Отражение от плоской поверхности</option>
-      <option>Прямолинейное распространение света. Зеркальное и рассеянное отражение</option>
-      <option>Плоские зеркала</option>
-      <option>Преломление света</option>
-      <option>Линзы</option>
     </select>
     <button id="gen-btn" onclick="generateSheet()">Сгенерировать рабочий лист</button>
 
     <div id="qr-result" style="display:none; text-align:center; margin-top:20px;">
-      <h4>Рабочий лист создан!</h4>
+      <h4>Успешно! Отправьте эту ссылку ученикам:</h4>
       <p id="sheet-link"></p>
       <div id="qrcode"></div>
+      
+      <button class="btn-blue" onclick="checkResults()">Посмотреть результаты учеников</button>
+      <div id="results-container"></div>
+    </div>
+
+    <div id="teacher-preview" style="display:none; margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px;">
+      <h3>Предпросмотр созданных заданий:</h3>
+      <div id="preview-tasks"></div>
     </div>
   </div>
 
@@ -66,34 +66,38 @@
     </div>
     
     <div id="tasks-container"></div>
-    
     <button onclick="submitAnswers()">Отправить ответы</button>
   </div>
 
   <div id="result-view" style="display:none; text-align:center;">
     <h2>Ответы отправлены!</h2>
     <h3 id="final-score"></h3>
+    <p>Можешь закрыть эту страницу.</p>
   </div>
 </div>
 
 <script>
+  // Адрес вашего сервера Cloudflare
   const WORKER_URL = '[https://steep-grass-214f.z-kuralbayeva.workers.dev](https://steep-grass-214f.z-kuralbayeva.workers.dev)'; 
+
+  let currentTeacherSheetId = null;
 
   const urlParams = new URLSearchParams(window.location.search);
   const sheetId = urlParams.get('id');
 
+  // Если есть ID в ссылке - это ученик
   if (sheetId && sheetId !== 'undefined') {
     document.getElementById('teacher-view').style.display = 'none';
     document.getElementById('student-view').style.display = 'block';
     loadStudentSheet(sheetId);
   }
 
+  // УЧИТЕЛЬ: Генерация листа
   async function generateSheet() {
     const btn = document.getElementById('gen-btn');
     const topic = document.getElementById('topic-select').value;
-    
     btn.disabled = true;
-    btn.innerText = "Генерация ИИ (подождите 5-10 сек)...";
+    btn.innerText = "ИИ генерирует задания (5-10 сек)...";
 
     try {
       const response = await fetch(`${WORKER_URL}/api/generate`, {
@@ -101,44 +105,84 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic })
       });
-      
       const data = await response.json();
 
       if (data.error || !data.id) {
         alert("Ошибка генерации: " + (data.error || "Неизвестная ошибка"));
-        btn.disabled = false;
-        btn.innerText = "Сгенерировать рабочий лист";
         return;
       }
 
+      currentTeacherSheetId = data.id;
       const studentUrl = `${window.location.origin}${window.location.pathname}?id=${data.id}`;
       
+      // Показываем ссылку и QR
       document.getElementById('qr-result').style.display = 'block';
       document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank">${studentUrl}</a>`;
-      
       document.getElementById('qrcode').innerHTML = "";
       new QRCode(document.getElementById("qrcode"), studentUrl);
 
+      // Показываем предпросмотр заданий
+      document.getElementById('teacher-preview').style.display = 'block';
+      const previewDiv = document.getElementById('preview-tasks');
+      previewDiv.innerHTML = '';
+      
+      data.sheet.tasks.forEach(task => {
+        let tHtml = `<div class="task">
+          <strong>Задача ${task.id} (${task.points} б.)</strong><br>${task.text}<br><br>`;
+        if (task.type === 'blanks') {
+          tHtml += `<em>Шаблон для ученика:</em><br>${task.solution_template}`;
+        }
+        tHtml += `</div>`;
+        previewDiv.innerHTML += tHtml;
+      });
+
     } catch (err) {
-      alert(" Ошибка сети или сервера: " + err.message);
+      alert("Ошибка сервера: " + err.message);
     } finally {
       btn.disabled = false;
       btn.innerText = "Сгенерировать рабочий лист";
     }
   }
 
-  let currentTasks = [];
+  // УЧИТЕЛЬ: Проверка результатов
+  async function checkResults() {
+    if (!currentTeacherSheetId) return;
+    const resDiv = document.getElementById('results-container');
+    resDiv.innerHTML = 'Загрузка...';
 
+    try {
+      const res = await fetch(`${WORKER_URL}/api/results/${currentTeacherSheetId}`);
+      const results = await res.json();
+
+      if (results.length === 0) {
+        resDiv.innerHTML = '<p>Пока нет ни одного ответа от учеников.</p>';
+        return;
+      }
+
+      let html = `<table><tr><th>Ученик</th><th>Класс</th><th>Балл</th><th>Время</th></tr>`;
+      results.forEach(sub => {
+        const date = new Date(sub.timestamp).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+        html += `<tr>
+          <td>${sub.student.name}</td>
+          <td>${sub.student.class}</td>
+          <td><strong>${sub.score} / ${sub.maxScore}</strong></td>
+          <td>${date}</td>
+        </tr>`;
+      });
+      html += `</table>`;
+      resDiv.innerHTML = html;
+    } catch (err) {
+      resDiv.innerHTML = `<p style="color:red">Ошибка загрузки результатов.</p>`;
+    }
+  }
+
+  // УЧЕНИК: Загрузка листа
+  let currentTasks = [];
   async function loadStudentSheet(id) {
     try {
       const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
       const data = await res.json();
       
-      if (data.error) {
-        alert("Ошибка загрузки: " + data.error);
-        return;
-      }
-
       document.getElementById('sheet-topic').innerText = data.topic;
       currentTasks = data.tasks;
 
@@ -157,15 +201,15 @@
           });
           taskHtml += `<p><strong>Решение:</strong><br>${solution}</p>`;
         }
-
         taskHtml += `</div>`;
         container.innerHTML += taskHtml;
       });
     } catch (e) {
-      alert("Не удалось загрузить задачи: " + e.message);
+      alert("Не удалось загрузить задачи.");
     }
   }
 
+  // УЧЕНИК: Отправка ответов
   async function submitAnswers() {
     const name = document.getElementById('student-name').value;
     const studentClass = document.getElementById('student-class').value;
@@ -177,26 +221,20 @@
 
     const answers = {};
     currentTasks.forEach(t => answers[t.id] = []);
-
     document.querySelectorAll('.task-input').forEach(input => {
       const taskId = input.getAttribute('data-taskid');
       answers[taskId].push(input.value);
     });
 
-    const response = await fetch(`${WORKER_URL}/api/submit`, {
+    await fetch(`${WORKER_URL}/api/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sheetId,
-        student: { name, class: studentClass },
-        answers
-      })
+      body: JSON.stringify({ sheetId, student: { name, class: studentClass }, answers })
     });
 
-    const result = await response.json();
+    // Для ученика баллы скрыты в интерфейсе, чтобы считал учитель, но можно и показать
     document.getElementById('student-view').style.display = 'none';
     document.getElementById('result-view').style.display = 'block';
-    document.getElementById('final-score').innerText = `Ваш балл: ${result.score} из ${result.maxScore}`;
   }
 </script>
 </body>
