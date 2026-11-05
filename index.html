@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Physics Interactive Worksheet</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="[https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js](https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js)"></script>
+  <!-- Библиотека для Excel экспорта -->
+  <script src="[https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js](https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js)"></script>
+  <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
   <style>
     :root {
       --primary: #4F46E5;
@@ -46,25 +48,20 @@
 
     /* Layout */
     .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-    
-    /* Constructor Grid */
     .constructor-grid { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
     
-    /* Cards & Panels */
     .panel {
       background: var(--surface); border-radius: 12px; padding: 24px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border);
     }
     .panel-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--text-main); }
 
-    /* Forms */
     .form-group { margin-bottom: 16px; }
     .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
-    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; transition: border 0.2s; }
+    .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; }
     .form-control:focus { border-color: var(--primary); }
     textarea.form-control { resize: vertical; min-height: 80px; }
 
-    /* Buttons */
     .btn-primary {
       width: 100%; background: var(--primary); color: white; border: none;
       padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
@@ -72,30 +69,29 @@
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
     
-    .btn-outline { background: white; border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .btn-excel { background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-excel:hover { background: #059669; }
 
-    /* Task Preview Styles */
     .badge { display: inline-block; background: var(--badge-bg); color: var(--badge-text); padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
     .task-preview { border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .task-title { font-weight: 600; font-size: 16px; margin: 0; }
-    .task-points { font-size: 14px; color: var(--text-muted); }
-    .reference-box { background: var(--success-bg); color: var(--success-text); padding: 12px; border-radius: 6px; font-size: 14px; margin-top: 16px; border: 1px solid #A7F3D0; }
+    .task-title { font-weight: 600; font-size: 15px; margin: 0; }
+    .task-points { font-size: 13px; color: var(--text-muted); }
+    .reference-box { background: var(--success-bg); color: var(--success-text); padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 14px; border: 1px solid #A7F3D0; }
     
-    /* Table Styles */
-    .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .table-responsive { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { background: #F9FAFB; padding: 12px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-    td { padding: 16px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--text-main); }
+    td { padding: 14px 16px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--text-main); }
     .status-badge { background: #D1FAE5; color: #065F46; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
 
-    /* QR Code */
     #qrcode img { margin: 0 auto; border-radius: 8px; border: 1px solid var(--border); padding: 10px; background: white; }
     .link-box { background: #F9FAFB; border: 1px solid var(--border); padding: 10px; border-radius: 6px; font-size: 12px; word-break: break-all; margin-bottom: 15px; }
 
-    /* Student View Inputs */
     .blank-input { display: inline-block; width: 100px; padding: 6px; margin: 0 4px; text-align: center; border: 1px solid var(--border); border-radius: 4px;}
+
+    /* Modal */
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: white; border-radius: 12px; width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; }
   </style>
 </head>
 <body>
@@ -110,17 +106,15 @@
       </div>
     </div>
     <div class="nav-tabs" id="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('constructor')">Конструктор</button>
-      <button class="nav-tab" onclick="switchTab('answers')">Ответы</button>
+      <button class="nav-tab active" id="tab-btn-constructor" onclick="switchTab('constructor')">Конструктор</button>
+      <button class="nav-tab" id="tab-btn-answers" onclick="switchTab('answers')">Ответы <span id="answers-count-badge" style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 10px; font-size: 11px;">0</span></button>
     </div>
   </header>
 
   <div class="container">
     
-    <!-- VIEW: CONSTRUCTOR -->
+    <!-- CONSTRUCTOR -->
     <div id="view-constructor" class="constructor-grid">
-      
-      <!-- Sidebar Settings -->
       <div class="panel">
         <h2 class="panel-title">Параметры рабочего листа</h2>
         
@@ -159,59 +153,57 @@
         </div>
       </div>
 
-      <!-- Preview Area -->
       <div class="panel" id="preview-area" style="display: none;">
         <div style="margin-bottom: 24px;">
           <span class="badge" id="preview-class">8 КЛАСС</span>
           <span style="float: right; font-size: 14px; color: var(--primary); font-weight: 600;">Макс. балл: 10</span>
-          <h2 id="preview-topic" style="font-size: 24px; margin-bottom: 8px;">Тема урока</h2>
+          <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 8px;">Тема урока</h2>
           <p id="preview-objective" style="color: var(--text-muted); font-size: 14px;"><strong>ЦО:</strong> </p>
         </div>
-        
         <div id="preview-tasks"></div>
       </div>
       
-      <!-- Empty State -->
       <div class="panel" id="empty-state" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        <p>Выберите параметры и нажмите «Сгенерировать», чтобы увидеть предпросмотр рабочего листа.</p>
+        <p>Выберите параметры и нажмите «Сгенерировать», чтобы увидеть предпросмотр 6 задач (10 баллов).</p>
       </div>
-
     </div>
 
-    <!-- VIEW: ANSWERS DASHBOARD -->
+    <!-- ANSWERS DASHBOARD -->
     <div id="view-answers" class="panel" style="display: none;">
-      <div class="dashboard-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
           <h2 class="panel-title" style="margin-bottom: 4px;">Дэшборд ответов</h2>
-          <p style="font-size: 12px; color: var(--text-muted);">Автопроверка ИИ + возможность ручной корректировки</p>
+          <p style="font-size: 12px; color: var(--text-muted);">Автопроверка ИИ + возможность ручной проверки</p>
         </div>
-        <div>
-          <button class="btn-outline" onclick="loadResults()" style="background: #10B981; color: white; border: none; font-weight: 600;">↻ Обновить</button>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-excel" onclick="exportToExcel()">📊 Excel</button>
+          <button class="form-control" style="width: auto; cursor: pointer;" onclick="loadResults()">↻ Обновить</button>
         </div>
       </div>
 
-      <div class="table-responsive">
+      <div style="overflow-x: auto;">
         <table>
           <thead>
             <tr>
               <th>Ученик (ФИ)</th>
               <th>Класс</th>
-              <th>Итого</th>
+              <th>Итого балл</th>
               <th>Статус</th>
               <th>Время</th>
+              <th>Действие</th>
             </tr>
           </thead>
           <tbody id="results-tbody">
-            <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Сгенерируйте лист и дождитесь ответов учеников</td></tr>
+            <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Сгенерируйте лист и дождитесь ответов учеников</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- VIEW: STUDENT -->
+    <!-- STUDENT VIEW -->
     <div id="view-student" style="display: none; max-width: 800px; margin: 0 auto;">
       <div class="panel" style="margin-bottom: 20px;">
-        <span class="badge">Рабочий лист</span>
+        <span class="badge">Интерактивный рабочий лист</span>
         <h2 id="student-topic" style="margin: 10px 0;">Загрузка...</h2>
         
         <div style="display: flex; gap: 15px; margin-top: 20px;">
@@ -231,51 +223,68 @@
       <button class="btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
     </div>
 
-    <!-- VIEW: SUCCESS -->
+    <!-- SUCCESS VIEW -->
     <div id="view-success" class="panel" style="display: none; text-align: center; max-width: 500px; margin: 40px auto;">
       <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
       <h2 style="margin-bottom: 10px;">Ответы успешно отправлены!</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">Учитель уже получил вашу работу.</p>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Учитель получит результаты в онлайн-дэшборде.</p>
       <h3 id="final-score" style="color: var(--primary); font-size: 24px;"></h3>
     </div>
 
   </div>
 
+  <!-- MODAL FOR MANUAL CHECK -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="modal">
+      <h3 style="margin-bottom: 15px;" id="modal-student-name">Детали ответа</h3>
+      <div id="modal-details-content"></div>
+      
+      <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label style="font-size: 14px; font-weight: 600;">Сколько поставить баллов:</label>
+          <input type="number" id="manual-score-input" class="form-control" style="width: 80px;" min="0" max="10">
+        </div>
+        <div>
+          <button class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="saveManualScore()">Сохранить балл</button>
+          <button class="form-control" style="width: auto; display: inline-block;" onclick="closeModal()">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // URL ВАШЕГО CLOUDFLARE WORKER
-    const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev'; 
+    const WORKER_URL = '[https://steep-grass-214f.z-kuralbayeva.workers.dev](https://steep-grass-214f.z-kuralbayeva.workers.dev)'; 
 
     let currentTeacherSheetId = null;
     let currentTasks = [];
+    let fetchedResults = [];
+    let activeSubId = null;
 
-    // Инициализация при загрузке
     const urlParams = new URLSearchParams(window.location.search);
     const sheetId = urlParams.get('id');
 
     if (sheetId && sheetId !== 'undefined') {
-      // Режим ученика
       document.getElementById('main-header').style.display = 'none';
       document.getElementById('view-constructor').style.display = 'none';
       document.getElementById('view-student').style.display = 'block';
       loadStudentSheet(sheetId);
     }
 
-    // Переключение вкладок учителя
     function switchTab(tabName) {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-
+      
       if (tabName === 'constructor') {
+        document.getElementById('tab-btn-constructor').classList.add('active');
         document.getElementById('view-constructor').style.display = 'grid';
         document.getElementById('view-answers').style.display = 'none';
       } else {
+        document.getElementById('tab-btn-answers').classList.add('active');
         document.getElementById('view-constructor').style.display = 'none';
         document.getElementById('view-answers').style.display = 'block';
         loadResults();
       }
     }
 
-    // УЧИТЕЛЬ: Генерация
     async function generateSheet() {
       const btn = document.getElementById('gen-btn');
       const topic = document.getElementById('topic-select').value;
@@ -283,9 +292,8 @@
       const objective = document.getElementById('objective-input').value;
       
       btn.disabled = true;
-      btn.innerText = "Генерация ИИ (10-15 сек)...";
+      btn.innerText = "Генерация 6 задач (10-15 сек)...";
 
-      // Склеиваем параметры для промпта
       const fullTopic = `${classLevel}. Тема: ${topic}. ${objective ? 'Цель: ' + objective : ''}`;
 
       try {
@@ -304,13 +312,11 @@
         currentTeacherSheetId = data.id;
         const studentUrl = `${window.location.origin}${window.location.pathname}?id=${data.id}`;
         
-        // Показ QR и ссылки
         document.getElementById('qr-result').style.display = 'block';
-        document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank" style="color: var(--primary); text-decoration: none;">${studentUrl}</a>`;
+        document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank" style="color: var(--primary); font-weight:600; text-decoration: none;">${studentUrl}</a>`;
         document.getElementById('qrcode').innerHTML = "";
         if (window.QRCode) new QRCode(document.getElementById("qrcode"), { text: studentUrl, width: 128, height: 128 });
 
-        // Отрисовка превью
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
         
@@ -326,22 +332,21 @@
             let tHtml = `
               <div class="task-preview">
                 <div class="task-header">
-                  <span class="badge" style="margin:0;">ЗАДАНИЕ ${index + 1} (Уровень ${task.level})</span>
+                  <span class="badge" style="margin:0;">ЗАДАНИЕ ${index + 1} (${task.level})</span>
                   <span class="task-points">${task.points} б.</span>
                 </div>
                 <p class="task-title">${task.text}</p>
             `;
             
-            if (task.type === 'multiple_choice') {
+            if (task.type === 'multiple_choice' && task.options) {
               tHtml += `<ul style="margin-top:10px; padding-left:20px; color: var(--text-muted);">` + task.options.map(o => `<li>${o}</li>`).join('') + `</ul>`;
             } else if (task.type === 'blanks') {
-              tHtml += `<p style="margin-top:10px; color: var(--text-muted); font-family: monospace;">Шаблон: ${task.solution_template}</p>`;
+              tHtml += `<p style="margin-top:10px; color: var(--text-muted); font-family: monospace;">Пропуски: ${task.solution_template}</p>`;
             }
             
-            // Зеленый блок "Эталон"
             tHtml += `
                 <div class="reference-box">
-                  <strong>Эталон:</strong> ${task.correct.join(', ')}
+                  <strong>Эталон правильного ответа:</strong> ${task.correct ? task.correct.join(', ') : ''}
                 </div>
               </div>`;
             previewDiv.innerHTML += tHtml;
@@ -356,46 +361,108 @@
       }
     }
 
-    // УЧИТЕЛЬ: Загрузка результатов в дэшборд
     async function loadResults() {
-      if (!currentTeacherSheetId) return;
+      if (!currentTeacherSheetId) {
+        document.getElementById('results-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Сначала сгенерируйте рабочий лист в конструкторе.</td></tr>';
+        return;
+      }
       const tbody = document.getElementById('results-tbody');
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Загрузка...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Загрузка ответов...</td></tr>';
       
       try {
         const res = await fetch(`${WORKER_URL}/api/results/${currentTeacherSheetId}`);
-        const results = await res.json();
+        fetchedResults = await res.json();
         
-        if (!results || results.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Пока нет решений от учеников.</td></tr>';
+        document.getElementById('answers-count-badge').innerText = fetchedResults.length;
+
+        if (!fetchedResults || fetchedResults.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Пока нет решений от учеников.</td></tr>';
           return;
         }
 
         let html = '';
-        results.forEach(sub => {
+        fetchedResults.forEach((sub, idx) => {
           const date = new Date(sub.timestamp).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
           html += `
             <tr>
               <td style="font-weight: 500;">${sub.student.name}</td>
               <td>${sub.student.class}</td>
               <td style="font-weight: 700; color: var(--primary);">${sub.score} / ${sub.maxScore}</td>
-              <td><span class="status-badge">🤖 ИИ проверил</span></td>
+              <td><span class="status-badge">${sub.manualOverride ? '✏️ Проверено вручную' : '🤖 ИИ проверил'}</span></td>
               <td>${date}</td>
+              <td><button class="btn-primary" style="width:auto; padding: 4px 10px; font-size: 12px;" onclick="openDetailModal(${idx})">Проверить</button></td>
             </tr>`;
         });
         tbody.innerHTML = html;
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Ошибка загрузки.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Ошибка загрузки.</td></tr>`;
       }
     }
 
-    // УЧЕНИК: Загрузка задач
+    function openDetailModal(index) {
+      const sub = fetchedResults[index];
+      activeSubId = sub.id;
+      document.getElementById('modal-student-name').innerText = `Ответы: ${sub.student.name} (${sub.student.class})`;
+      document.getElementById('manual-score-input').value = sub.score;
+      
+      let html = '';
+      if (sub.details) {
+        sub.details.forEach(d => {
+          html += `
+            <div style="border-bottom: 1px solid var(--border); padding: 10px 0;">
+              <strong>Задача ${d.taskId} (Балл: ${d.points} / ${d.maxPoints})</strong><br>
+              <span style="color: var(--text-muted); font-size:13px;">Ответ ученика: ${d.studentAns.join(', ') || 'нет ответа'}</span><br>
+              <span style="color: var(--success-text); font-size:13px;">Правильный: ${d.correctAns ? d.correctAns.join(', ') : ''}</span>
+            </div>`;
+        });
+      } else {
+        html = '<p>Подробные детали отсутствуют.</p>';
+      }
+      document.getElementById('modal-details-content').innerHTML = html;
+      document.getElementById('detail-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('detail-modal').style.display = 'none';
+    }
+
+    async function saveManualScore() {
+      const newScore = document.getElementById('manual-score-input').value;
+      await fetch(`${WORKER_URL}/api/update-score`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheetId: currentTeacherSheetId, subId: activeSubId, newScore })
+      });
+      closeModal();
+      loadResults();
+    }
+
+    function exportToExcel() {
+      if (!fetchedResults || fetchedResults.length === 0) {
+        alert("Нет данных для экспорта!");
+        return;
+      }
+
+      const excelData = fetchedResults.map(r => ({
+        "Ученик": r.student.name,
+        "Класс": r.student.class,
+        "Балл": r.score,
+        "Макс. балл": r.maxScore,
+        "Время сдачи": new Date(r.timestamp).toLocaleString('ru-RU')
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Результаты");
+      XLSX.writeFile(workbook, `Результаты_физика_${currentTeacherSheetId}.xlsx`);
+    }
+
+    // STUDENT CODE
     async function loadStudentSheet(id) {
       try {
         const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
         const data = await res.json();
         
-        // Очищаем топик от служебных слов для ученика
         let cleanTopic = data.topic.split('. Тема: ')[1] || data.topic;
         cleanTopic = cleanTopic.split('. Цель:')[0];
         
@@ -409,21 +476,27 @@
           let taskHtml = `
             <div class="panel" style="margin-bottom: 16px;">
               <div class="task-header">
-                <span class="badge" style="margin:0;">ЗАДАНИЕ ${index + 1}</span>
+                <span class="badge" style="margin:0;">ЗАДАНИЕ ${index + 1} (${task.level})</span>
                 <span class="task-points">${task.points} б.</span>
               </div>
               <p class="task-title" style="margin-bottom: 16px;">${task.text}</p>
           `;
           
-          if (task.type === 'multiple_choice') {
+          // Выпадающий список для тестовых заданий 1 и 2
+          if (task.type === 'multiple_choice' || index < 2) {
+            const opts = task.options && task.options.length > 0 ? task.options : ["Вариант A", "Вариант B", "Вариант C", "Вариант D"];
             taskHtml += `<select class="form-control task-input" data-taskid="${task.id}">
-              <option value="" disabled selected>Выберите ответ...</option>
-              ${task.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+              <option value="" disabled selected>Выберите ответ из списка...</option>
+              ${opts.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
             </select>`;
-          } else if (task.type === 'short_answer') {
-            taskHtml += `<input type="text" class="form-control task-input" data-taskid="${task.id}" placeholder="Ваш ответ">`;
-          } else if (task.type === 'blanks') {
-            let solution = task.solution_template.replace(/\[ПРОПУСК\]/g, () => {
+          } 
+          // Краткий ответ для задачи 3
+          else if (task.type === 'short_answer' || index === 2) {
+            taskHtml += `<input type="text" class="form-control task-input" data-taskid="${task.id}" placeholder="Введите краткий ответ">`;
+          } 
+          // Решение с пропусками для 4, 5 и 6
+          else if (task.type === 'blanks' || task.solution_template) {
+            let solution = (task.solution_template || "[ПРОПУСК]").replace(/\[ПРОПУСК\]/g, () => {
               return `<input type="text" class="blank-input task-input" data-taskid="${task.id}" placeholder="...">`;
             });
             taskHtml += `<div style="background: #F9FAFB; padding: 15px; border-radius: 6px; border: 1px solid var(--border); font-family: monospace; line-height: 2;">${solution}</div>`;
@@ -436,7 +509,6 @@
       }
     }
 
-    // УЧЕНИК: Отправка ответов
     async function submitAnswers() {
       const name = document.getElementById('student-name').value;
       const studentClass = document.getElementById('student-class').value;
