@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Физика с Алдаром көсе</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f7f6; color: #333; }
+    .container { max-width: 700px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { color: #2c3e50; text-align: center; }
+    select, input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    button { background: #27ae60; color: white; border: none; font-weight: bold; cursor: pointer; }
+    button:hover { background: #219150; }
+    .task { background: #fafafa; border-left: 4px solid #3498db; padding: 15px; margin: 15px 0; border-radius: 4px; }
+    .blank-input { display: inline-block; width: 80px; padding: 4px 8px; margin: 0 4px; }
+    #qrcode { margin: 20px auto; display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ Физика с Алдаром көсе</h1>
+
+  <!-- РЕЖИМ УЧИТЕЛЯ -->
+  <div id="teacher-view">
+    <h3>Панель учителя</h3>
+    <label>Выберите тему урока:</label>
+    <select id="topic-select">
+      <option>Внутренняя энергия. Виды теплопередачи</option>
+      <option>Количество теплоты. Удельная теплоёмкость</option>
+      <option>Удельная теплота сгорания топлива</option>
+      <option>Плавление и отвердевание</option>
+      <option>Электризация тел и электрическое поле</option>
+      <option>Электрический ток и электрическая цепь</option>
+      <option>Сила тока, напряжение, сопротивление</option>
+      <option>Закон Ома</option>
+      <option>Расчет сопротивления проводников</option>
+      <option>Последовательное и параллельное соединение</option>
+      <option>Работа и мощность тока</option>
+      <option>Тепловое действие тока</option>
+      <option>Электромагнитные явления</option>
+      <option>Источники света. Прямолинейное распространение и отражение света</option>
+      <option>Отражение и преломление света. Скорость света</option>
+      <option>Распространение света. Отражение от плоской поверхности</option>
+      <option>Прямолинейное распространение света. Зеркальное и рассеянное отражение</option>
+      <option>Плоские зеркала</option>
+      <option>Преломление света</option>
+      <option>Линзы</option>
+    </select>
+    <button onclick="generateSheet()">Сгенерировать рабочий лист</button>
+
+    <div id="qr-result" style="display:none; text-align:center; margin-top:20px;">
+      <h4>Рабочий лист создан!</h4>
+      <p id="sheet-link"></p>
+      <div id="qrcode"></div>
+    </div>
+  </div>
+
+  <!-- РЕЖИМ УЧЕНИКА -->
+  <div id="student-view" style="display:none;">
+    <h2 id="sheet-topic"></h2>
+    <div style="display:flex; gap:10px;">
+      <input type="text" id="student-name" placeholder="Фамилия и Имя" required>
+      <input type="text" id="student-class" placeholder="Класс" style="width:150px;" required>
+    </div>
+    
+    <div id="tasks-container"></div>
+    
+    <button onclick="submitAnswers()">Отправить ответы</button>
+  </div>
+
+  <div id="result-view" style="display:none; text-align:center;">
+    <h2>Ответы отправлены!</h2>
+    <h3 id="final-score"></h3>
+  </div>
+</div>
+
+<script>
+  const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev'; 
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const sheetId = urlParams.get('id');
+
+  if (sheetId) {
+    document.getElementById('teacher-view').style.display = 'none';
+    document.getElementById('student-view').style.display = 'block';
+    loadStudentSheet(sheetId);
+  }
+
+  async function generateSheet() {
+    const topic = document.getElementById('topic-select').value;
+    alert("ИИ генерирует рабочий лист, подождите...");
+
+    const response = await fetch(`${WORKER_URL}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic })
+    });
+    
+    const data = await response.json();
+    const studentUrl = `${window.location.origin}${window.location.pathname}?id=${data.id}`;
+    
+    document.getElementById('qr-result').style.display = 'block';
+    document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank">${studentUrl}</a>`;
+    
+    document.getElementById('qrcode').innerHTML = "";
+    new QRCode(document.getElementById("qrcode"), studentUrl);
+  }
+
+  let currentTasks = [];
+
+  async function loadStudentSheet(id) {
+    const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
+    const data = await res.json();
+    
+    document.getElementById('sheet-topic').innerText = data.topic;
+    currentTasks = data.tasks;
+
+    const container = document.getElementById('tasks-container');
+    container.innerHTML = '';
+
+    data.tasks.forEach(task => {
+      let taskHtml = `<div class="task"><h4>Задача ${task.id} (${task.points} б.)</h4><p>${task.text}</p>`;
+      
+      if (task.type === 'short_answer') {
+        taskHtml += `<input type="text" class="task-input" data-taskid="${task.id}" placeholder="Ваш ответ">`;
+      } else if (task.type === 'blanks') {
+        let solution = task.solution_template;
+        let count = 0;
+        solution = solution.replace(/\[ПРОПУСК\]/g, () => {
+          count++;
+          return `<input type="text" class="blank-input task-input" data-taskid="${task.id}">`;
+        });
+        taskHtml += `<p><strong>Решение:</strong><br>${solution}</p>`;
+      }
+
+      taskHtml += `</div>`;
+      container.innerHTML += taskHtml;
+    });
+  }
+
+  async function submitAnswers() {
+    const name = document.getElementById('student-name').value;
+    const studentClass = document.getElementById('student-class').value;
+
+    if (!name || !studentClass) {
+      alert("Заполните имя и класс!");
+      return;
+    }
+
+    const answers = {};
+    currentTasks.forEach(t => answers[t.id] = []);
+
+    document.querySelectorAll('.task-input').forEach(input => {
+      const taskId = input.getAttribute('data-taskid');
+      answers[taskId].push(input.value);
+    });
+
+    const response = await fetch(`${WORKER_URL}/api/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sheetId,
+        student: { name, class: studentClass },
+        answers
+      })
+    });
+
+    const result = await response.json();
+    document.getElementById('student-view').style.display = 'none';
+    document.getElementById('result-view').style.display = 'block';
+    document.getElementById('final-score').innerText = `Ваш балл: ${result.score} из ${result.maxScore}`;
+  }
+</script>
+</body>
+</html>
