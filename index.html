@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Physics Interactive Worksheet</title>
-  <script src="[https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js](https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js)"></script>
-  <!-- Библиотека для Excel экспорта -->
-  <script src="[https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js](https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js)"></script>
-  <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)" rel="stylesheet">
+  
+  <!-- Надежные CDN библиотеки (QR, Excel, Шрифты) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  
   <style>
     :root {
       --primary: #4F46E5;
@@ -253,7 +255,8 @@
   </div>
 
   <script>
-    const WORKER_URL = '[https://steep-grass-214f.z-kuralbayeva.workers.dev](https://steep-grass-214f.z-kuralbayeva.workers.dev)'; 
+    // Точный URL адрес вашего Worker
+    const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev'; 
 
     let currentTeacherSheetId = null;
     let currentTasks = [];
@@ -482,7 +485,6 @@
               <p class="task-title" style="margin-bottom: 16px;">${task.text}</p>
           `;
           
-          // Выпадающий список для тестовых заданий 1 и 2
           if (task.type === 'multiple_choice' || index < 2) {
             const opts = task.options && task.options.length > 0 ? task.options : ["Вариант A", "Вариант B", "Вариант C", "Вариант D"];
             taskHtml += `<select class="form-control task-input" data-taskid="${task.id}">
@@ -490,11 +492,9 @@
               ${opts.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
             </select>`;
           } 
-          // Краткий ответ для задачи 3
           else if (task.type === 'short_answer' || index === 2) {
             taskHtml += `<input type="text" class="form-control task-input" data-taskid="${task.id}" placeholder="Введите краткий ответ">`;
           } 
-          // Решение с пропусками для 4, 5 и 6
           else if (task.type === 'blanks' || task.solution_template) {
             let solution = (task.solution_template || "[ПРОПУСК]").replace(/\[ПРОПУСК\]/g, () => {
               return `<input type="text" class="blank-input task-input" data-taskid="${task.id}" placeholder="...">`;
@@ -514,7 +514,7 @@
       const studentClass = document.getElementById('student-class').value;
 
       if (!name || !studentClass) {
-        alert("Пожалуйста, заполните Фамилию, Имя и Класс!");
+        alert("Пожалуйста, заполните Фамилия, Имя и Класс!");
         return;
       }
 
