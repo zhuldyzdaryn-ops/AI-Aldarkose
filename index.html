@@ -609,7 +609,6 @@
             let solutionStr = (task.solution_template || "[ПРОПУСК]")
               .replace(/\\n/g, '<br>')
               .replace(/\|/g, '<br><br>');
-            
             solutionStr = solutionStr.replace(/\[ПРОПУСК\s*\d*\]/gi, () => {
               return `<input type="text" class="blank-input task-input" placeholder="?" data-taskid="${task.id}">`;
             });
