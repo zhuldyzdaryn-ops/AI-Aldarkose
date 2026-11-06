@@ -104,7 +104,74 @@
 
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal { background: white; border-radius: 12px; width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; }
-  </style>
+  /* === АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ === */
+    @media (max-width: 768px) {
+      /* Шапка: выстраиваем элементы по центру друг под другом */
+      .app-header {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+        text-align: center;
+      }
+      
+      .header-logo {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      /* Вкладки на всю ширину */
+      .nav-tabs {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .nav-tab {
+        flex: 1;
+        text-align: center;
+      }
+
+      /* Сетка конструктора: делаем один столбец вместо двух */
+      .constructor-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      /* Уменьшаем отступы по краям экрана и внутри панелей */
+      .container {
+        margin: 15px auto;
+        padding: 0 10px;
+      }
+      
+      .panel {
+        padding: 16px;
+      }
+
+      /* Кнопки в панели результатов (скачать, очистить) делаем на всю ширину */
+      #view-answers .btn {
+        width: 100%;
+        margin-bottom: 8px;
+        display: block;
+      }
+      
+      /* Группа кнопок в результатах перестраивается в колонку */
+      #view-answers > div:first-child {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+      }
+
+      /* Модальное окно (окно проверки) на весь экран */
+      .modal {
+        width: 95%;
+        padding: 16px;
+      }
+
+      /* Поля ввода ученика: друг под другом, а не в ряд */
+      #view-student > div > div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }</style>
 </head>
 <body>
 
