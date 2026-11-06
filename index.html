@@ -598,11 +598,17 @@
             taskHtml += `<div style="margin-top:10px;"><input type="text" class="inline-short-input task-input" data-taskid="${task.id}">${unitStr}</div>`;
           } 
           else if (task.type === 'blanks' || task.solution_template) {
-            let solutionStr = (task.solution_template || "[ПРОПУСК]").replace(/\\n/g, '<br>').replace(/\|/g, '<br><br>');
-            solutionStr = solutionStr.replace(/\[ПРОПУСК\]/g, () => {
-              return `<input type="text" class="blank-input task-input" placeholder="значение" data-taskid="${task.id}">`;
-            });
-            taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные значения:</strong><br>${solutionStr}</div>`;
+  let solutionStr = (task.solution_template || "[ПРОПУСК]")
+    .replace(/\\n/g, '<br>')
+    .replace(/\|/g, '<br><br>');
+  
+  // Регулярное выражение /\[ПРОПУСК\s*\d*\]/gi ищет [ПРОПУСК], [ПРОПУСК 1], [ПРОПУСК 2] и т.д.
+  solutionStr = solutionStr.replace(/\[ПРОПУСК\s*\d*\]/gi, () => {
+    return `<input type="text" class="blank-input task-input" placeholder="?" data-taskid="${task.id}">`;
+  });
+  
+  taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные значения:</strong><br>${solutionStr}</div>`;
+}
           }
           taskHtml += `</div>`;
           container.innerHTML += taskHtml;
