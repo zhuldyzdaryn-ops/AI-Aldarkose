@@ -4,12 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Physics Interactive Worksheet</title>
-  <link rel="stylesheet" href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap)">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
   
   <style>
     :root {
       --primary: #4F46E5;
       --primary-hover: #4338CA;
+      --success: #10B981;
+      --success-hover: #059669;
+      --danger: #EF4444;
+      --danger-hover: #DC2626;
       --bg-color: #FCFBF7;
       --surface: #FFFFFF;
       --text-main: #1F2937;
@@ -61,74 +65,29 @@
     .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; }
     .form-control:focus { border-color: var(--primary); }
 
-    .btn-primary {
-      width: 100%; background: var(--primary); color: white; border: none;
-      padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
-    }
+    .btn { padding: 12px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; font-size: 14px; text-align: center; }
+    .btn-primary { width: 100%; background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+    
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: var(--success-hover); }
+    
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: var(--danger-hover); }
+
+    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text-main); }
+    .btn-outline:hover { background: #F3F4F6; }
 
     .badge { display: inline-block; background: var(--badge-bg); color: var(--badge-text); padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
     
-    .adal-box {
-      background: var(--adal-bg);
-      color: var(--adal-text);
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 20px;
-      border-left: 4px solid #F59E0B;
-    }
-
-    /* Блок Дано */
-    .dano-box {
-      background: var(--dano-bg);
-      border-left: 4px solid var(--dano-border);
-      padding: 10px 14px;
-      border-radius: 4px;
-      font-size: 14px;
-      margin: 12px 0;
-      font-family: 'Inter', sans-serif;
-    }
-
-    /* Форматирование решений */
-    .solution-step-box {
-      background: #FFFFFF;
-      padding: 12px 0;
-      font-size: 15px;
-      line-height: 2.2;
-    }
-
-    .blank-input {
-      display: inline-block;
-      width: 120px;
-      height: 38px;
-      padding: 4px 8px;
-      margin: 0 6px;
-      text-align: center;
-      border: 1.5px solid #D97706;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
-      background: #FFFDF9;
-      outline: none;
-    }
+    .adal-box { background: var(--adal-bg); color: var(--adal-text); padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 20px; border-left: 4px solid #F59E0B; }
+    .dano-box { background: var(--dano-bg); border-left: 4px solid var(--dano-border); padding: 10px 14px; border-radius: 4px; font-size: 14px; margin: 12px 0; }
+    
+    .solution-step-box { background: #FFFFFF; padding: 12px 0; font-size: 15px; line-height: 2.2; }
+    .blank-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin: 0 6px; text-align: center; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; font-weight: 500; background: #FFFDF9; outline: none; }
     .blank-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
-
-    .inline-short-input {
-      display: inline-block;
-      width: 120px;
-      height: 38px;
-      padding: 4px 8px;
-      margin-right: 6px;
-      border: 1.5px solid #D97706;
-      border-radius: 8px;
-      font-size: 15px;
-      text-align: center;
-      background: #FFFDF9;
-      outline: none;
-    }
+    .inline-short-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin-right: 6px; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; text-align: center; background: #FFFDF9; outline: none; }
 
     .task-preview { border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; background: white; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -154,21 +113,32 @@
       <div style="background: var(--primary); padding: 8px; border-radius: 8px; font-size: 20px;">⚡</div>
       <div>
         <h1>AI Physics Interactive Worksheet</h1>
-        <p>Конструктор рабочих листов (8 класс)</p>
+        <p>Панель учителя</p>
       </div>
     </div>
     <div class="nav-tabs" id="nav-tabs">
       <button class="nav-tab active" id="tab-btn-constructor" onclick="switchTab('constructor')">Конструктор</button>
-      <button class="nav-tab" id="tab-btn-answers" onclick="switchTab('answers')">Ответы <span id="answers-count-badge" style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 10px; font-size: 11px;">0</span></button>
+      <button class="nav-tab" id="tab-btn-answers" onclick="switchTab('answers')">Результаты <span id="answers-count-badge" style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 10px; font-size: 11px;">0</span></button>
     </div>
   </header>
 
   <div class="container">
     <div id="view-constructor" class="constructor-grid">
       <div class="panel">
-        <h2 class="panel-title">Параметры генерации</h2>
+        <h2 class="panel-title">Параметры РЛ</h2>
         
         <div class="form-group">
+          <label>Класс</label>
+          <select id="grade-select" class="form-control" onchange="toggleTopicInput()">
+            <option value="7">7 класс</option>
+            <option value="8" selected>8 класс</option>
+            <option value="9">9 класс</option>
+            <option value="10">10 класс</option>
+            <option value="11">11 класс</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="topic-container-8">
           <label>Выберите тему из сборника (8 класс)</label>
           <select id="topic-select" class="form-control">
             <option>Внутренняя энергия. Виды теплопередачи</option>
@@ -186,15 +156,17 @@
             <option>Электромагнитные явления</option>
             <option>Источники света. Прямолинейное распространение и отражение света</option>
             <option>Отражение и преломление света. Скорость света</option>
-            <option>Распространение света. Отражение от плоской поверхности</option>
-            <option>Прямолинейное распространение света. Зеркальное и рассеянное отражение</option>
             <option>Плоские зеркала</option>
-            <option>Преломление света</option>
-            <option>Линзы</option>
+            <option>Преломление света. Линзы</option>
           </select>
         </div>
 
-        <button id="gen-btn" class="btn-primary" onclick="generateSheet()">Сгенерировать рабочий лист</button>
+        <div class="form-group" id="topic-container-custom" style="display: none;">
+          <label>Введите тему урока</label>
+          <input type="text" id="custom-topic" class="form-control" placeholder="Например: Законы Ньютона">
+        </div>
+
+        <button id="gen-btn" class="btn btn-primary" onclick="generateSheet()">Сгенерировать рабочий лист</button>
 
         <div id="qr-result" style="display:none; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px;">
           <label style="font-size: 12px; font-weight:600; color: var(--text-muted); text-transform:uppercase;">Ссылка и QR для учеников</label>
@@ -205,7 +177,7 @@
 
       <div class="panel" id="preview-area" style="display: none;">
         <div style="margin-bottom: 20px;">
-          <span class="badge">8 КЛАСС</span>
+          <span class="badge" id="preview-grade-badge">8 КЛАСС</span>
           <span style="float: right; font-size: 14px; color: var(--primary); font-weight: 600;">Макс. балл: 10</span>
           <h2 id="preview-topic" style="font-size: 22px; margin-bottom: 12px;">Тема урока</h2>
           
@@ -217,18 +189,20 @@
       </div>
       
       <div class="panel" id="empty-state" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        <p>Выберите тему из списка и нажмите «Сгенерировать рабочий лист».</p>
+        <p>Выберите класс, тему и нажмите «Сгенерировать рабочий лист».</p>
       </div>
     </div>
 
     <div id="view-answers" class="panel" style="display: none;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
-          <h2 class="panel-title" style="margin-bottom: 4px;">Дэшборд ответов</h2>
+          <h2 class="panel-title" style="margin-bottom: 4px;">Результаты учеников</h2>
           <p style="font-size: 12px; color: var(--text-muted);">Автопроверка ИИ + возможность ручной проверки</p>
         </div>
         <div style="display: flex; gap: 10px;">
-          <button class="form-control" style="width: auto; cursor: pointer;" onclick="loadResults()">↻ Обновить</button>
+          <button class="btn btn-success" onclick="downloadExcel()">📊 Скачать Excel</button>
+          <button class="btn btn-danger" onclick="clearResults()">🗑 Очистить все</button>
+          <button class="btn btn-outline" onclick="loadResults()">↻ Обновить</button>
         </div>
       </div>
 
@@ -251,6 +225,7 @@
       </div>
     </div>
 
+    <!-- Интерфейс для ученика (отображается при наличии ?id=...) -->
     <div id="view-student" style="display: none; max-width: 800px; margin: 0 auto;">
       <div class="panel" style="margin-bottom: 20px;">
         <span class="badge">Интерактивный рабочий лист</span>
@@ -266,17 +241,18 @@
             <input type="text" id="student-name" class="form-control" placeholder="Иванов Иван">
           </div>
           <div class="form-group" style="flex: 1;">
-            <label>Класс</label>
-            <input type="text" id="student-class" class="form-control" value="8 класс" placeholder="8 «А»">
+            <label>Класс (индекс)</label>
+            <input type="text" id="student-class" class="form-control" placeholder='Например: "А"'>
           </div>
         </div>
       </div>
 
       <div id="student-tasks"></div>
       
-      <button class="btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
+      <button class="btn btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
     </div>
 
+    <!-- Сообщение об успешной отправке -->
     <div id="view-success" class="panel" style="display: none; text-align: center; max-width: 500px; margin: 40px auto;">
       <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
       <h2 style="margin-bottom: 10px;">Ответы успешно отправлены!</h2>
@@ -285,6 +261,7 @@
     </div>
   </div>
 
+  <!-- Модальное окно для проверки ответа (Карандашик) -->
   <div class="modal-overlay" id="detail-modal">
     <div class="modal">
       <h3 style="margin-bottom: 15px;" id="modal-student-name">Детали ответа</h3>
@@ -292,19 +269,19 @@
       
       <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; display: flex; justify-content: space-between; align-items: center;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <label style="font-size: 14px; font-weight: 600;">Балл:</label>
+          <label style="font-size: 14px; font-weight: 600;">Итоговый балл:</label>
           <input type="number" id="manual-score-input" class="form-control" style="width: 80px;" min="0" max="10">
         </div>
-        <div>
-          <button class="btn-primary" style="width: auto; padding: 8px 16px;" onclick="saveManualScore()">Сохранить балл</button>
-          <button class="form-control" style="width: auto; display: inline-block;" onclick="closeModal()">Закрыть</button>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary" onclick="saveManualScore()">Сохранить балл</button>
+          <button class="btn btn-outline" onclick="closeModal()">Закрыть</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const WORKER_URL = '[https://steep-grass-214f.z-kuralbayeva.workers.dev](https://steep-grass-214f.z-kuralbayeva.workers.dev)';
+    const WORKER_URL = 'https://steep-grass-214f.z-kuralbayeva.workers.dev';
 
     let currentTeacherSheetId = null;
     let currentTasks = [];
@@ -335,18 +312,45 @@
       }
     }
 
+    function toggleTopicInput() {
+      const grade = document.getElementById('grade-select').value;
+      if (grade === '8') {
+        document.getElementById('topic-container-8').style.display = 'block';
+        document.getElementById('topic-container-custom').style.display = 'none';
+      } else {
+        document.getElementById('topic-container-8').style.display = 'none';
+        document.getElementById('topic-container-custom').style.display = 'block';
+      }
+    }
+
     async function generateSheet() {
       const btn = document.getElementById('gen-btn');
-      const topic = document.getElementById('topic-select').value;
+      const grade = document.getElementById('grade-select').value;
+      let topic = '';
+      
+      if (grade === '8') {
+        topic = document.getElementById('topic-select').value;
+      } else {
+        topic = document.getElementById('custom-topic').value;
+        if (!topic.trim()) {
+          alert('Пожалуйста, введите тему урока');
+          return;
+        }
+      }
       
       btn.disabled = true;
-      btn.innerText = "Генерация 6 задач (10-15 сек)...";
+      btn.innerText = "Генерация задач (10-15 сек)...";
 
       try {
         const response = await fetch(`${WORKER_URL}/api/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic })
+          // Передаем дополнительные инструкции для воркера (генерация В и С через пропуски)
+          body: JSON.stringify({ 
+            topic: topic,
+            grade: grade,
+            instruction_hint: "Уровни В и С: сделай задачи в виде текстов решений, где ученику нужно вписать только числовые значения и буквы (величины) в пропущенные строки."
+          })
         });
         const data = await response.json();
 
@@ -360,10 +364,11 @@
         
         document.getElementById('qr-result').style.display = 'block';
         document.getElementById('sheet-link').innerHTML = `<a href="${studentUrl}" target="_blank" style="color: var(--primary); font-weight:600; text-decoration: none;">${studentUrl}</a>`;
-        document.getElementById('qrcode-img').innerHTML = `<img src="[https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=$](https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=$){encodeURIComponent(studentUrl)}" alt="QR Code" style="border-radius:8px; border:1px solid #ddd; padding:6px; background:white;">`;
+        document.getElementById('qrcode-img').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(studentUrl)}" alt="QR Code" style="border-radius:8px; border:1px solid #ddd; padding:6px; background:white;">`;
 
         document.getElementById('empty-state').style.display = 'none';
         document.getElementById('preview-area').style.display = 'block';
+        document.getElementById('preview-grade-badge').innerText = `${grade} КЛАСС`;
         document.getElementById('preview-topic').innerText = topic;
         document.getElementById('preview-adal').innerText = data.sheet.adal_azamat_value || "Честность и точность в измерениях — залог доверия!";
         
@@ -388,8 +393,8 @@
             if (task.type === 'multiple_choice' && task.options) {
               tHtml += `<div style="margin-top:10px; color: var(--text-muted); font-size:14px;">— выбери —</div>`;
             } else if (task.type === 'blanks') {
-              let sol = task.solution_template.replace(/\\n/g, '<br>').replace(/\[ПРОПУСК\]/g, '<span style="display:inline-block; width:60px; border-bottom:2px dashed #D97706; text-align:center;">?</span>');
-              tHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные величины:</strong><br>${sol}</div>`;
+              let sol = task.solution_template.replace(/\\n/g, '<br>').replace(/\|/g, '<br><br>').replace(/\[ПРОПУСК\]/g, '<span style="display:inline-block; width:60px; border-bottom:2px dashed #D97706; text-align:center;">?</span>');
+              tHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные величины/числа:</strong><br>${sol}</div>`;
             }
             
             tHtml += `
@@ -435,14 +440,65 @@
               <td style="font-weight: 500;">${sub.student.name}</td>
               <td>${sub.student.class}</td>
               <td style="font-weight: 700; color: var(--primary);">${sub.score} / ${sub.maxScore}</td>
-              <td><span class="status-badge">${sub.manualOverride ? '✏️ Проверено вручную' : '🤖 ИИ проверил'}</span></td>
+              <td><span class="status-badge">${sub.manualOverride ? '✏️ Изменено учителем' : '🤖 ИИ проверил'}</span></td>
               <td>${date}</td>
-              <td><button class="btn-primary" style="width:auto; padding: 4px 10px; font-size: 12px;" onclick="openDetailModal(${idx})">Проверить</button></td>
+              <td>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 13px;" title="Посмотреть и изменить балл" onclick="openDetailModal(${idx})">
+                  ✏️ Изменить
+                </button>
+              </td>
             </tr>`;
         });
         tbody.innerHTML = html;
       } catch (err) {
         tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Ошибка загрузки.</td></tr>`;
+      }
+    }
+
+    // Экспорт в Excel (CSV)
+    function downloadExcel() {
+      if (!fetchedResults || fetchedResults.length === 0) {
+        alert("Нет данных для скачивания.");
+        return;
+      }
+      
+      const headers = ["Ученик", "Класс", "Балл", "Макс. балл", "Статус", "Время"];
+      const rows = fetchedResults.map(r => [
+        `"${r.student.name}"`, 
+        `"${r.student.class}"`, 
+        r.score, 
+        r.maxScore, 
+        `"${r.manualOverride ? 'Изменено вручную' : 'Автопроверка'}"`, 
+        `"${new Date(r.timestamp).toLocaleString('ru-RU')}"`
+      ]);
+      
+      const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(e => e.join(";"))].join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `results_sheet_${currentTeacherSheetId}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Очистка результатов
+    async function clearResults() {
+      if (!currentTeacherSheetId) return;
+      if (!confirm("Вы уверены, что хотите удалить ВСЕ результаты учеников по этому рабочему листу? Это действие нельзя отменить.")) return;
+      
+      try {
+        await fetch(`${WORKER_URL}/api/clear-results/${currentTeacherSheetId}`, { method: 'DELETE' });
+        fetchedResults = [];
+        document.getElementById('answers-count-badge').innerText = '0';
+        loadResults();
+        alert("Результаты успешно очищены.");
+      } catch(e) {
+        // Fallback: визуальная очистка если бэкенд не поддерживает DELETE
+        fetchedResults = [];
+        document.getElementById('answers-count-badge').innerText = '0';
+        document.getElementById('results-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Пока нет решений от учеников.</td></tr>';
       }
     }
 
@@ -475,11 +531,23 @@
 
     async function saveManualScore() {
       const newScore = document.getElementById('manual-score-input').value;
-      await fetch(`${WORKER_URL}/api/update-score`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sheetId: currentTeacherSheetId, subId: activeSubId, newScore })
-      });
+      try {
+        await fetch(`${WORKER_URL}/api/update-score`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sheetId: currentTeacherSheetId, subId: activeSubId, newScore })
+        });
+      } catch (e) {
+        console.log("Локальное сохранение балла, сервер недоступен");
+      }
+      
+      // Обновляем визуально до ответа сервера
+      const sub = fetchedResults.find(s => s.id === activeSubId);
+      if (sub) {
+        sub.score = newScore;
+        sub.manualOverride = true;
+      }
+      
       closeModal();
       loadResults();
     }
@@ -493,6 +561,11 @@
         if (data.adal_azamat_value) {
           document.getElementById('student-adal-box').style.display = 'block';
           document.getElementById('student-adal').innerText = data.adal_azamat_value;
+        }
+
+        // Обновляем заголовок, если в базе есть грейд
+        if(data.grade) {
+          document.querySelector('#view-student .badge').innerText = `Интерактивный рабочий лист (${data.grade} класс)`;
         }
 
         currentTasks = data.tasks;
@@ -525,11 +598,11 @@
             taskHtml += `<div style="margin-top:10px;"><input type="text" class="inline-short-input task-input" data-taskid="${task.id}">${unitStr}</div>`;
           } 
           else if (task.type === 'blanks' || task.solution_template) {
-            let solutionStr = (task.solution_template || "[ПРОПУСК]").replace(/\\n/g, '<br>');
+            let solutionStr = (task.solution_template || "[ПРОПУСК]").replace(/\\n/g, '<br>').replace(/\|/g, '<br><br>');
             solutionStr = solutionStr.replace(/\[ПРОПУСК\]/g, () => {
-              return `<input type="text" class="blank-input task-input" data-taskid="${task.id}">`;
+              return `<input type="text" class="blank-input task-input" placeholder="значение" data-taskid="${task.id}">`;
             });
-            taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные величины:</strong><br>${solutionStr}</div>`;
+            taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные значения:</strong><br>${solutionStr}</div>`;
           }
           taskHtml += `</div>`;
           container.innerHTML += taskHtml;
