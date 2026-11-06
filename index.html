@@ -563,8 +563,7 @@
           document.getElementById('student-adal').innerText = data.adal_azamat_value;
         }
 
-        // Обновляем заголовок, если в базе есть грейд
-        if(data.grade) {
+        if (data.grade) {
           document.querySelector('#view-student .badge').innerText = `Интерактивный рабочий лист (${data.grade} класс)`;
         }
 
@@ -587,34 +586,42 @@
           }
 
           if (task.type === 'multiple_choice') {
-            const opts = task.options && task.options.length > 0 ? task.options : ["Вариант A", "Вариант B", "Вариант C", "Вариант D"];
-            taskHtml += `<div style="margin-top:10px;"><select class="form-control task-input" data-taskid="${task.id}" style="width: 200px;">
-              <option value="" disabled selected>— выбери —</option>
-              ${opts.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-            </select></div>`;
+            const opts = (task.options && task.options.length > 0) 
+              ? task.options 
+              : ["Вариант A", "Вариант B", "Вариант C", "Вариант D"];
+            
+            let optionsHtml = opts.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+            
+            taskHtml += `<div style="margin-top:10px;">
+              <select class="form-control task-input" data-taskid="${task.id}" style="width: 100%; max-width: 300px;">
+                <option value="" disabled selected>— выберите ответ —</option>
+                ${optionsHtml}
+              </select>
+            </div>`;
           } 
           else if (task.type === 'short_answer') {
             const unitStr = task.unit ? ` <span style="font-weight:500;">${task.unit}</span>` : '';
-            taskHtml += `<div style="margin-top:10px;"><input type="text" class="inline-short-input task-input" data-taskid="${task.id}">${unitStr}</div>`;
+            taskHtml += `<div style="margin-top:10px;">
+              <input type="text" class="inline-short-input task-input" placeholder="Ответ" data-taskid="${task.id}">${unitStr}
+            </div>`;
           } 
           else if (task.type === 'blanks' || task.solution_template) {
-  let solutionStr = (task.solution_template || "[ПРОПУСК]")
-    .replace(/\\n/g, '<br>')
-    .replace(/\|/g, '<br><br>');
-  
-  // Регулярное выражение /\[ПРОПУСК\s*\d*\]/gi ищет [ПРОПУСК], [ПРОПУСК 1], [ПРОПУСК 2] и т.д.
-  solutionStr = solutionStr.replace(/\[ПРОПУСК\s*\d*\]/gi, () => {
-    return `<input type="text" class="blank-input task-input" placeholder="?" data-taskid="${task.id}">`;
-  });
-  
-  taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные значения:</strong><br>${solutionStr}</div>`;
-}
+            let solutionStr = (task.solution_template || "[ПРОПУСК]")
+              .replace(/\\n/g, '<br>')
+              .replace(/\|/g, '<br><br>');
+            
+            solutionStr = solutionStr.replace(/\[ПРОПУСК\s*\d*\]/gi, () => {
+              return `<input type="text" class="blank-input task-input" placeholder="?" data-taskid="${task.id}">`;
+            });
+            
+            taskHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные значения:</strong><br>${solutionStr}</div>`;
           }
+
           taskHtml += `</div>`;
           container.innerHTML += taskHtml;
         });
       } catch (e) {
-        alert("Ошибка загрузки рабочего листа.");
+        alert("Ошибка загрузки рабочего листа: " + e.message);
       }
     }
 
