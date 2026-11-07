@@ -171,6 +171,30 @@
         flex-direction: column;
         gap: 10px;
       }
+    }/* Стили для обратной связи ученика */
+    .input-correct { 
+      border-color: var(--success) !important; 
+      background-color: var(--success-bg) !important; 
+      color: var(--success-text); 
+    }
+    .input-wrong { 
+      border-color: var(--danger) !important; 
+      background-color: #FEF2F2 !important; 
+      color: var(--danger); 
+    }
+    .feedback-box { 
+      background: #F8FAFC; 
+      border-left: 4px solid var(--primary); 
+      padding: 16px; 
+      margin-top: 20px; 
+      border-radius: 8px; 
+      line-height: 1.6; 
+    }
+    .correct-answer-hint {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 4px;
+      font-weight: 500;
     }</style>
 </head>
 <body>
@@ -708,7 +732,7 @@
 
       const btn = event.target;
       btn.disabled = true;
-      btn.innerText = "Отправка...";
+      btn.innerText = "Проверка...";
 
       try {
         const response = await fetch(`${WORKER_URL}/api/submit`, {
@@ -718,11 +742,84 @@
         });
         const result = await response.json();
 
-        document.getElementById('view-student').style.display = 'none';
-        document.getElementById('view-success').style.display = 'block';
-        document.getElementById('final-score').innerText = `Ваш результат: ${result.score} из ${result.maxScore} баллов`;
+        // Скрываем кнопку отправки, чтобы не нажали дважды
+        btn.style.display = 'none';
+
+        // Функция нормализации для фронтенда (как на бэкенде)
+        const normalize = (str) => String(str || "").trim().toLowerCase().replace(/\s+/g, "").replace(/[,.]/g, ".").replace(/°c|°|градус|дж|вт|кг|м/g, "");
+
+        // Подсвечиваем поля зеленым/красным
+        if (result.details) {
+          result.details.forEach(d => {
+            const inputs = document.querySelectorAll(`.task-input[data-taskid="${d.taskId}"]`);
+            
+            if (inputs.length === 1) {
+              // Для тестов и кратких ответов
+              const input = inputs[0];
+              input.disabled = true; 
+              if (d.points === d.maxPoints) {
+                input.classList.add('input-correct');
+              } else {
+                input.classList.add('input-wrong');
+                // Показываем правильный ответ, если ученик ошибся
+                input.insertAdjacentHTML('afterend', `<div class="correct-answer-hint">Правильный ответ: ${d.correctAns[0]}</div>`);
+              }
+            } 
+            else if (inputs.length > 1) {
+              // Для заданий с пропусками (blanks)
+              inputs.forEach((input, idx) => {
+                input.disabled = true;
+                const sVal = normalize(d.studentAns[idx]);
+                const cVal = normalize(d.correctAns[idx]);
+                
+                if (sVal === cVal && sVal !== "") {
+                  input.classList.add('input-correct');
+                } else {
+                  input.classList.add('input-wrong');
+                }
+              });
+            }
+          });
+        }
+
+        // Формируем мотивирующую обратную связь
+        const percent = result.score / result.maxScore;
+        let feedbackText = "";
+        
+        if (percent === 1) {
+          feedbackText = "Отличная работа! Ты идеально усвоил(а) тему. Так держать! 🌟";
+        } else if (percent >= 0.7) {
+          feedbackText = "Хороший результат! Есть небольшие недочеты. Стоит повторить формулы, но в целом тема понята. 👍";
+        } else if (percent >= 0.4) {
+          feedbackText = "Удовлетворительно, но есть пробелы. Рекомендую перечитать конспект и обратить внимание на расчеты. 📚";
+        } else {
+          feedbackText = "Тема пока не усвоена. Не расстраивайся! Обязательно повтори базовые определения и попроси учителя разобрать непонятные моменты. 💪";
+        }
+
+        const topicName = document.getElementById('student-topic').innerText;
+
+        // Показываем блок с результатом и рекомендацией
+        const feedbackHtml = `
+          <div class="panel" style="margin-top: 24px; border: 2px solid var(--primary); animation: fadeIn 0.5s;">
+            <div style="font-size: 32px; text-align: center; margin-bottom: 10px;">${percent >= 0.7 ? '🎉' : '📊'}</div>
+            <h2 style="text-align: center; margin-bottom: 15px; color: var(--primary);">Твой результат: ${result.score} из ${result.maxScore} баллов</h2>
+            
+            <div class="feedback-box">
+              <strong style="color: var(--primary);">💡 Рекомендация по теме «${topicName}»:</strong><br>
+              ${feedbackText}
+            </div>
+            
+            <p style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-muted);">
+              Твои ответы отправлены учителю. Можешь закрыть эту вкладку.
+            </p>
+          </div>
+        `;
+        
+        document.getElementById('student-tasks').insertAdjacentHTML('beforeend', feedbackHtml);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
       } catch(e) {
-        alert("Ошибка при отправке.");
+        alert("Ошибка при проверке ответов. Попробуй еще раз.");
         btn.disabled = false;
         btn.innerText = "Отправить ответы на проверку";
       }
