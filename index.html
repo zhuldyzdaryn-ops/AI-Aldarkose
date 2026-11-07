@@ -85,9 +85,9 @@
     .dano-box { background: var(--dano-bg); border-left: 4px solid var(--dano-border); padding: 10px 14px; border-radius: 4px; font-size: 14px; margin: 12px 0; }
     
     .solution-step-box { background: #FFFFFF; padding: 12px 0; font-size: 15px; line-height: 2.2; }
-    .blank-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin: 0 6px; text-align: center; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; font-weight: 500; background: #FFFDF9; outline: none; }
+    .blank-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin: 0 6px; text-align: center; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; font-weight: 500; background: #FFFDF9; outline: none; transition: 0.3s; }
     .blank-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
-    .inline-short-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin-right: 6px; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; text-align: center; background: #FFFDF9; outline: none; }
+    .inline-short-input { display: inline-block; width: 120px; height: 38px; padding: 4px 8px; margin-right: 6px; border: 1.5px solid #D97706; border-radius: 8px; font-size: 15px; text-align: center; background: #FFFDF9; outline: none; transition: 0.3s; }
 
     .task-preview { border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 16px; background: white; }
     .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -104,83 +104,17 @@
 
     .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
     .modal { background: white; border-radius: 12px; width: 600px; max-width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; }
-  /* === АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ === */
-    @media (max-width: 768px) {
-      /* Шапка: выстраиваем элементы по центру друг под другом */
-      .app-header {
-        flex-direction: column;
-        padding: 15px;
-        gap: 15px;
-        text-align: center;
-      }
-      
-      .header-logo {
-        flex-direction: column;
-        gap: 5px;
-      }
 
-      /* Вкладки на всю ширину */
-      .nav-tabs {
-        width: 100%;
-        justify-content: center;
-      }
-      
-      .nav-tab {
-        flex: 1;
-        text-align: center;
-      }
-
-      /* Сетка конструктора: делаем один столбец вместо двух */
-      .constructor-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-
-      /* Уменьшаем отступы по краям экрана и внутри панелей */
-      .container {
-        margin: 15px auto;
-        padding: 0 10px;
-      }
-      
-      .panel {
-        padding: 16px;
-      }
-
-      /* Кнопки в панели результатов (скачать, очистить) делаем на всю ширину */
-      #view-answers .btn {
-        width: 100%;
-        margin-bottom: 8px;
-        display: block;
-      }
-      
-      /* Группа кнопок в результатах перестраивается в колонку */
-      #view-answers > div:first-child {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 10px;
-      }
-
-      /* Модальное окно (окно проверки) на весь экран */
-      .modal {
-        width: 95%;
-        padding: 16px;
-      }
-
-      /* Поля ввода ученика: друг под другом, а не в ряд */
-      #view-student > div > div[style*="display: flex"] {
-        flex-direction: column;
-        gap: 10px;
-      }
-    }/* Стили для обратной связи ученика */
+    /* === Стили для обратной связи ученика === */
     .input-correct { 
       border-color: var(--success) !important; 
       background-color: var(--success-bg) !important; 
-      color: var(--success-text); 
+      color: var(--success-text) !important; 
     }
     .input-wrong { 
       border-color: var(--danger) !important; 
       background-color: #FEF2F2 !important; 
-      color: var(--danger); 
+      color: var(--danger) !important; 
     }
     .feedback-box { 
       background: #F8FAFC; 
@@ -194,8 +128,60 @@
       color: var(--danger);
       font-size: 13px;
       margin-top: 4px;
-      font-weight: 500;
-    }</style>
+      font-weight: 600;
+    }
+
+    /* === АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ === */
+    @media (max-width: 768px) {
+      .app-header {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+        text-align: center;
+      }
+      .header-logo {
+        flex-direction: column;
+        gap: 5px;
+      }
+      .nav-tabs {
+        width: 100%;
+        justify-content: center;
+      }
+      .nav-tab {
+        flex: 1;
+        text-align: center;
+      }
+      .constructor-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .container {
+        margin: 15px auto;
+        padding: 0 10px;
+      }
+      .panel {
+        padding: 16px;
+      }
+      #view-answers .btn {
+        width: 100%;
+        margin-bottom: 8px;
+        display: block;
+      }
+      #view-answers > div:first-child {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+      }
+      .modal {
+        width: 95%;
+        padding: 16px;
+      }
+      #view-student > div > div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -316,7 +302,7 @@
       </div>
     </div>
 
-    <!-- Интерфейс для ученика (отображается при наличии ?id=...) -->
+    <!-- Интерфейс для ученика -->
     <div id="view-student" style="display: none; max-width: 800px; margin: 0 auto;">
       <div class="panel" style="margin-bottom: 20px;">
         <span class="badge">Интерактивный рабочий лист</span>
@@ -340,15 +326,8 @@
 
       <div id="student-tasks"></div>
       
-      <button class="btn btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
-    </div>
-
-    <!-- Сообщение об успешной отправке -->
-    <div id="view-success" class="panel" style="display: none; text-align: center; max-width: 500px; margin: 40px auto;">
-      <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
-      <h2 style="margin-bottom: 10px;">Ответы успешно отправлены!</h2>
-      <p style="color: var(--text-muted); margin-bottom: 20px;">Учитель получит результаты в онлайн-дэшборде.</p>
-      <h3 id="final-score" style="color: var(--primary); font-size: 24px;"></h3>
+      <!-- Обратите внимание: кнопке добавлен ID "submit-btn" -->
+      <button id="submit-btn" class="btn btn-primary" style="margin-top: 20px; font-size: 16px;" onclick="submitAnswers()">Отправить ответы на проверку</button>
     </div>
   </div>
 
@@ -436,7 +415,6 @@
         const response = await fetch(`${WORKER_URL}/api/generate`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          // Передаем дополнительные инструкции для воркера (генерация В и С через пропуски)
           body: JSON.stringify({ 
             topic: topic,
             grade: grade,
@@ -484,7 +462,7 @@
             if (task.type === 'multiple_choice' && task.options) {
               tHtml += `<div style="margin-top:10px; color: var(--text-muted); font-size:14px;">— выбери —</div>`;
             } else if (task.type === 'blanks') {
-              let sol = task.solution_template.replace(/\\n/g, '<br>').replace(/\|/g, '<br><br>').replace(/\[ПРОПУСК\]/g, '<span style="display:inline-block; width:60px; border-bottom:2px dashed #D97706; text-align:center;">?</span>');
+              let sol = task.solution_template.replace(/\\n/g, '<br>').replace(/\|/g, '<br><br>').replace(/\[ПРОПУСК\s*\d*\]/gi, '<span style="display:inline-block; width:60px; border-bottom:2px dashed #D97706; text-align:center;">?</span>');
               tHtml += `<div class="solution-step-box"><strong>Решение — впиши пропущенные величины/числа:</strong><br>${sol}</div>`;
             }
             
@@ -586,7 +564,6 @@
         loadResults();
         alert("Результаты успешно очищены.");
       } catch(e) {
-        // Fallback: визуальная очистка если бэкенд не поддерживает DELETE
         fetchedResults = [];
         document.getElementById('answers-count-badge').innerText = '0';
         document.getElementById('results-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Пока нет решений от учеников.</td></tr>';
@@ -632,7 +609,6 @@
         console.log("Локальное сохранение балла, сервер недоступен");
       }
       
-      // Обновляем визуально до ответа сервера
       const sub = fetchedResults.find(s => s.id === activeSubId);
       if (sub) {
         sub.score = newScore;
@@ -730,7 +706,7 @@
         answers[input.getAttribute('data-taskid')].push(input.value);
       });
 
-      const btn = event.target;
+      const btn = document.getElementById('submit-btn'); // Исправлено получение кнопки
       btn.disabled = true;
       btn.innerText = "Проверка...";
 
@@ -754,19 +730,16 @@
             const inputs = document.querySelectorAll(`.task-input[data-taskid="${d.taskId}"]`);
             
             if (inputs.length === 1) {
-              // Для тестов и кратких ответов
               const input = inputs[0];
               input.disabled = true; 
               if (d.points === d.maxPoints) {
                 input.classList.add('input-correct');
               } else {
                 input.classList.add('input-wrong');
-                // Показываем правильный ответ, если ученик ошибся
                 input.insertAdjacentHTML('afterend', `<div class="correct-answer-hint">Правильный ответ: ${d.correctAns[0]}</div>`);
               }
             } 
             else if (inputs.length > 1) {
-              // Для заданий с пропусками (blanks)
               inputs.forEach((input, idx) => {
                 input.disabled = true;
                 const sVal = normalize(d.studentAns[idx]);
