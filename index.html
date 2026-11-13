@@ -181,7 +181,20 @@
         gap: 10px;
       }
     }
-  </style>
+  /* === АНТИ-ЧИТ ЗАЩИТА === */
+    .no-select {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* Разрешаем выделять текст только внутри полей ввода, чтобы можно было печатать */
+    .no-select input, .no-select select {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }</style>
 </head>
 <body>
 
@@ -621,6 +634,10 @@
 
     async function loadStudentSheet(id) {
       try {
+        // Включаем слежку анти-чита
+        isStudentMode = true;
+        document.body.classList.add('no-select'); // Запрет выделения текста
+        
         const res = await fetch(`${WORKER_URL}/api/sheet/${id}`);
         const data = await res.json();
         
@@ -797,6 +814,48 @@
         btn.innerText = "Отправить ответы на проверку";
       }
     }
+  // === АНТИ-ЧИТ СИСТЕМА ===
+    let cheatWarnings = 0;
+    let isStudentMode = false;
+
+    // 1. Блокируем меню по правой кнопке мыши и копирование
+    document.addEventListener('contextmenu', event => {
+      if (isStudentMode) event.preventDefault();
+    });
+
+    document.addEventListener('copy', event => {
+      if (isStudentMode) {
+        event.preventDefault();
+        alert("Копирование текста заданий запрещено!");
+      }
+    });
+
+    // 2. Запрещаем вставлять скопированный откуда-то текст в поля ответов
+    document.addEventListener('paste', event => {
+      if (isStudentMode) {
+        event.preventDefault();
+        alert("Вставлять ответы запрещено. Вводи их самостоятельно!");
+      }
+    });
+
+    // 3. Отслеживаем сворачивание браузера или переключение вкладок
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && isStudentMode) {
+        // Если ответы уже отправлены (кнопка скрыта), не ругаемся
+        const btn = document.getElementById('submit-btn');
+        if (btn && btn.style.display === 'none') return;
+
+        cheatWarnings++;
+        if (cheatWarnings === 1) {
+          alert("⚠️ Внимание! Переключение вкладок или сворачивание браузера запрещено. Пожалуйста, решай самостоятельно. Это первое предупреждение.");
+        } else if (cheatWarnings === 2) {
+          alert("🚨 Последнее предупреждение! Если ты выйдешь с этой страницы еще раз, твоя работа будет отправлена учителю автоматически с теми ответами, что есть.");
+        } else if (cheatWarnings >= 3) {
+          alert("❌ Работа завершена досрочно из-за нарушения правил.");
+          submitAnswers(); // Автоматически отправляем работу
+        }
+      }
+    });
   </script>
 </body>
 </html>
