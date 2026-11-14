@@ -370,6 +370,10 @@
     let currentTasks = [];
     let fetchedResults = [];
     let activeSubId = null;
+    
+    // Переменные анти-чита должны быть здесь, наверху!
+    let cheatWarnings = 0;
+    let isStudentMode = false;
 
     const urlParams = new URLSearchParams(window.location.search);
     const sheetId = urlParams.get('id');
@@ -815,9 +819,7 @@
       }
     }
   // === АНТИ-ЧИТ СИСТЕМА ===
-    let cheatWarnings = 0;
-    let isStudentMode = false;
-
+    
     // 1. Блокируем меню по правой кнопке мыши и копирование
     document.addEventListener('contextmenu', event => {
       if (isStudentMode) event.preventDefault();
